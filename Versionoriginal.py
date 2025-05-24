@@ -1,49 +1,72 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-def registrar_datos():
-    datos = {
-        "Número de control": entry_num_control.get(),
-        "Nombre": entry_nombre.get(),
-        "Edad": entry_edad.get(),
-        "Género": combo_genero.get(),
-        "CURP": entry_curp.get(),
-        "NSS": entry_nss.get(),
-        "Turno": combo_turno.get()
-    }
-    messagebox.showinfo("Registro exitoso", "Datos registrados correctamente.")
+class Empleado:
+    def __init__(self, nss, curp, genero, num_control, turno, area):
+        self.nss = nss
+        self.curp = curp
+        self.genero = genero
+        self.num_control = num_control
+        self.turno = turno
+        self.area = area
 
-ventana = tk.Tk()
-ventana.title("Registro de Asistencia - Hospital Sante")
-ventana.geometry("400x350")
+empleados = {}
 
-tk.Label(ventana, text="Número de control:").pack(pady=5)
-entry_num_control = tk.Entry(ventana)
-entry_num_control.pack()
+def registrar_empleado():
+    nss = entry_nss.get()
+    curp = entry_curp.get()
+    genero = combo_genero.get()
+    num_control = entry_num_control.get()
+    turno = combo_turno.get()
+    area = entry_area.get()
+    if nss and curp and genero and num_control and turno and area:
+        if nss in empleados:
+            messagebox.showerror("Error", "Empleado ya registrado.")
+            return
+        empleados[nss] = Empleado(nss, curp, genero, num_control, turno, area)
+        messagebox.showinfo("Éxito", "Empleado registrado.")
+        limpiar_campos()
+    else:
+        messagebox.showerror("Error", "Todos los campos son obligatorios.")
 
-tk.Label(ventana, text="Nombre:").pack(pady=5)
-entry_nombre = tk.Entry(ventana)
-entry_nombre.pack()
+def limpiar_campos():
+    entry_nss.delete(0, tk.END)
+    entry_curp.delete(0, tk.END)
+    combo_genero.set('')
+    entry_num_control.delete(0, tk.END)
+    combo_turno.set('')
+    entry_area.delete(0, tk.END)
 
-tk.Label(ventana, text="Edad:").pack(pady=5)
-entry_edad = tk.Entry(ventana)
-entry_edad.pack()
+root = tk.Tk()
+root.title("Registro de Empleado")
 
-tk.Label(ventana, text="Género:").pack(pady=5)
-combo_genero = ttk.Combobox(ventana, values=["Masculino", "Femenino", "Otro"])
-combo_genero.pack()
+frame = tk.Frame(root)
+frame.pack(padx=10, pady=10)
 
-tk.Label(ventana, text="CURP:").pack(pady=5)
-entry_curp = tk.Entry(ventana)
-entry_curp.pack()
+tk.Label(frame, text="NSS:").grid(row=0, column=0)
+entry_nss = tk.Entry(frame)
+entry_nss.grid(row=0, column=1)
 
-tk.Label(ventana, text="Número de Seguro Social:").pack(pady=5)
-entry_nss = tk.Entry(ventana)
-entry_nss.pack()
-tk.Label(ventana, text="Turno:").pack(pady=5)
-combo_turno = ttk.Combobox(ventana, values=["matutino", "vespertino", "nocturno"])
-combo_turno.pack()
+tk.Label(frame, text="CURP:").grid(row=1, column=0)
+entry_curp = tk.Entry(frame)
+entry_curp.grid(row=1, column=1)
 
-tk.Button(ventana, text="Registrar", command=registrar_datos).pack(pady=20)
+tk.Label(frame, text="Género:").grid(row=2, column=0)
+combo_genero = ttk.Combobox(frame, values=["Masculino", "Femenino", "Otro"])
+combo_genero.grid(row=2, column=1)
 
-ventana.mainloop()
+tk.Label(frame, text="No. Control:").grid(row=3, column=0)
+entry_num_control = tk.Entry(frame)
+entry_num_control.grid(row=3, column=1)
+
+tk.Label(frame, text="Turno:").grid(row=4, column=0)
+combo_turno = ttk.Combobox(frame, values=["Matutino", "Vespertino", "Nocturno"])
+combo_turno.grid(row=4, column=1)
+
+tk.Label(frame, text="Área:").grid(row=5, column=0)
+entry_area = tk.Entry(frame)
+entry_area.grid(row=5, column=1)
+
+tk.Button(frame, text="Registrar Empleado", command=registrar_empleado).grid(row=6, column=0, columnspan=2, pady=5)
+
+root.mainloop()

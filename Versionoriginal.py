@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+import datetime
 
 class Empleado:
     def __init__(self, nss, curp, genero, num_control, turno, area):
@@ -9,6 +10,8 @@ class Empleado:
         self.num_control = num_control
         self.turno = turno
         self.area = area
+        self.entradas = []
+        self.salidas = []
 
 empleados = {}
 
@@ -26,6 +29,7 @@ def registrar_empleado():
         empleados[nss] = Empleado(nss, curp, genero, num_control, turno, area)
         messagebox.showinfo("Éxito", "Empleado registrado.")
         limpiar_campos()
+        actualizar_lista()
     else:
         messagebox.showerror("Error", "Todos los campos son obligatorios.")
 
@@ -37,8 +41,38 @@ def limpiar_campos():
     combo_turno.set('')
     entry_area.delete(0, tk.END)
 
+def actualizar_lista():
+    for row in tree.get_children():
+        tree.delete(row)
+    for emp in empleados.values():
+        tree.insert('', tk.END, values=(
+            emp.nss, emp.curp, emp.genero, emp.num_control, emp.turno, emp.area,
+            emp.entradas[-1] if emp.entradas else '',
+            emp.salidas[-1] if emp.salidas else ''
+        ))
+
+def marcar_entrada():
+    nss = entry_nss.get()
+    if nss in empleados:
+        emp = empleados[nss]
+        hora = datetime.datetime.now().strftime('%H:%M')
+        emp.entradas.append(hora)
+        actualizar_lista()
+    else:
+        messagebox.showerror("Error", "Empleado no encontrado.")
+
+def marcar_salida():
+    nss = entry_nss.get()
+    if nss in empleados:
+        emp = empleados[nss]
+        hora = datetime.datetime.now().strftime('%H:%M')
+        emp.salidas.append(hora)
+        actualizar_lista()
+    else:
+        messagebox.showerror("Error", "Empleado no encontrado.")
+
 root = tk.Tk()
-root.title("Registro de Empleado")
+root.title("Control de Asistencias")
 
 frame = tk.Frame(root)
 frame.pack(padx=10, pady=10)
@@ -68,5 +102,14 @@ entry_area = tk.Entry(frame)
 entry_area.grid(row=5, column=1)
 
 tk.Button(frame, text="Registrar Empleado", command=registrar_empleado).grid(row=6, column=0, columnspan=2, pady=5)
+tk.Button(frame, text="Marcar Entrada", command=marcar_entrada).grid(row=7, column=0)
+tk.Button(frame, text="Marcar Salida", command=marcar_salida).grid(row=7, column=1)
+
+cols = ["NSS", "CURP", "Género", "No. Control", "Turno", "Área", "Últ. Entrada", "Últ. Salida"]
+tree = ttk.Treeview(root, columns=cols, show='headings', height=8)
+for col in cols:
+    tree.heading(col, text=col)
+    tree.column(col, width=90)
+tree.pack(padx=10, pady=10)
 
 root.mainloop()

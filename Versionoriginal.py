@@ -10,8 +10,15 @@ class Empleado:
         self.num_control = num_control
         self.turno = turno
         self.area = area
+        self.horas_extra = 0
+        self.dias_vacacionales = 0
+        self.dias_economicos = 0
+        self.retardos = 0
+        self.incapacitaciones = 0
         self.entradas = []
         self.salidas = []
+        self.faltas = 0
+        self.suspendido_hasta = None
 
 empleados = {}
 
@@ -47,16 +54,28 @@ def actualizar_lista():
     for emp in empleados.values():
         tree.insert('', tk.END, values=(
             emp.nss, emp.curp, emp.genero, emp.num_control, emp.turno, emp.area,
+            emp.horas_extra, emp.dias_vacacionales, emp.dias_economicos,
+            emp.retardos, emp.incapacitaciones, emp.faltas,
             emp.entradas[-1] if emp.entradas else '',
-            emp.salidas[-1] if emp.salidas else ''
+            emp.salidas[-1] if emp.salidas else '',
+            emp.suspendido_hasta.strftime('%Y-%m-%d') if emp.suspendido_hasta else ''
         ))
 
 def marcar_entrada():
     nss = entry_nss.get()
     if nss in empleados:
         emp = empleados[nss]
+        hoy = datetime.date.today()
+        if emp.suspendido_hasta and hoy <= emp.suspendido_hasta:
+            messagebox.showwarning("Suspendido", f"Empleado suspendido hasta {emp.suspendido_hasta}")
+            return
         hora = datetime.datetime.now().strftime('%H:%M')
         emp.entradas.append(hora)
+        if hora > '09:10':
+            emp.retardos += 1
+            if emp.retardos % 3 == 0:
+                emp.suspendido_hasta = hoy + datetime.timedelta(days=7)
+                messagebox.showwarning("Suspensión", "Empleado suspendido por 1 semana por 3 retardos.")
         actualizar_lista()
     else:
         messagebox.showerror("Error", "Empleado no encontrado.")
@@ -102,10 +121,11 @@ entry_area = tk.Entry(frame)
 entry_area.grid(row=5, column=1)
 
 tk.Button(frame, text="Registrar Empleado", command=registrar_empleado).grid(row=6, column=0, columnspan=2, pady=5)
+
 tk.Button(frame, text="Marcar Entrada", command=marcar_entrada).grid(row=7, column=0)
 tk.Button(frame, text="Marcar Salida", command=marcar_salida).grid(row=7, column=1)
 
-cols = ["NSS", "CURP", "Género", "No. Control", "Turno", "Área", "Últ. Entrada", "Últ. Salida"]
+cols = ["NSS", "CURP", "Género", "No. Control", "Turno", "Área", "Horas Extra", "Vacaciones", "Económicos", "Retardos", "Incapacidad", "Faltas", "Últ. Entrada", "Últ. Salida", "Suspendido Hasta"]
 tree = ttk.Treeview(root, columns=cols, show='headings', height=8)
 for col in cols:
     tree.heading(col, text=col)

@@ -71,6 +71,7 @@ def marcar_entrada():
             return
         hora = datetime.datetime.now().strftime('%H:%M')
         emp.entradas.append(hora)
+        # Retardo si entra después de las 9:10
         if hora > '09:10':
             emp.retardos += 1
             if emp.retardos % 3 == 0:
@@ -86,6 +87,66 @@ def marcar_salida():
         emp = empleados[nss]
         hora = datetime.datetime.now().strftime('%H:%M')
         emp.salidas.append(hora)
+        actualizar_lista()
+    else:
+        messagebox.showerror("Error", "Empleado no encontrado.")
+
+def agregar_horas_extra():
+    nss = entry_nss.get()
+    if nss in empleados:
+        try:
+            horas = int(entry_horas_extra.get())
+            empleados[nss].horas_extra += horas
+            actualizar_lista()
+        except:
+            messagebox.showerror("Error", "Ingrese un número válido.")
+    else:
+        messagebox.showerror("Error", "Empleado no encontrado.")
+
+def agregar_vacaciones():
+    nss = entry_nss.get()
+    if nss in empleados:
+        try:
+            dias = int(entry_vacaciones.get())
+            empleados[nss].dias_vacacionales += dias
+            actualizar_lista()
+        except:
+            messagebox.showerror("Error", "Ingrese un número válido.")
+    else:
+        messagebox.showerror("Error", "Empleado no encontrado.")
+
+def agregar_economicos():
+    nss = entry_nss.get()
+    if nss in empleados:
+        try:
+            dias = int(entry_economicos.get())
+            empleados[nss].dias_economicos += dias
+            actualizar_lista()
+        except:
+            messagebox.showerror("Error", "Ingrese un número válido.")
+    else:
+        messagebox.showerror("Error", "Empleado no encontrado.")
+
+def agregar_incapacidad():
+    nss = entry_nss.get()
+    if nss in empleados:
+        try:
+            dias = int(entry_incapacidad.get())
+            empleados[nss].incapacitaciones += dias
+            actualizar_lista()
+        except:
+            messagebox.showerror("Error", "Ingrese un número válido.")
+    else:
+        messagebox.showerror("Error", "Empleado no encontrado.")
+
+def agregar_falta():
+    nss = entry_nss.get()
+    if nss in empleados:
+        emp = empleados[nss]
+        emp.faltas += 1
+        if emp.faltas % 3 == 0:
+            emp.suspendido_hasta = datetime.date.today() + datetime.timedelta(days=7)
+            messagebox.showwarning("Suspensión", "Empleado suspendido por 1 semana por 3 faltas.")
         actualizar_lista()
     else:
         messagebox.showerror("Error", "Empleado no encontrado.")
@@ -124,6 +185,28 @@ tk.Button(frame, text="Registrar Empleado", command=registrar_empleado).grid(row
 
 tk.Button(frame, text="Marcar Entrada", command=marcar_entrada).grid(row=7, column=0)
 tk.Button(frame, text="Marcar Salida", command=marcar_salida).grid(row=7, column=1)
+
+tk.Label(frame, text="Horas Extra:").grid(row=8, column=0)
+entry_horas_extra = tk.Entry(frame, width=5)
+entry_horas_extra.grid(row=8, column=1)
+tk.Button(frame, text="Agregar", command=agregar_horas_extra).grid(row=8, column=2)
+
+tk.Label(frame, text="Vacaciones:").grid(row=9, column=0)
+entry_vacaciones = tk.Entry(frame, width=5)
+entry_vacaciones.grid(row=9, column=1)
+tk.Button(frame, text="Agregar", command=agregar_vacaciones).grid(row=9, column=2)
+
+tk.Label(frame, text="Económicos:").grid(row=10, column=0)
+entry_economicos = tk.Entry(frame, width=5)
+entry_economicos.grid(row=10, column=1)
+tk.Button(frame, text="Agregar", command=agregar_economicos).grid(row=10, column=2)
+
+tk.Label(frame, text="Incapacidad:").grid(row=11, column=0)
+entry_incapacidad = tk.Entry(frame, width=5)
+entry_incapacidad.grid(row=11, column=1)
+tk.Button(frame, text="Agregar", command=agregar_incapacidad).grid(row=11, column=2)
+
+tk.Button(frame, text="Agregar Falta", command=agregar_falta).grid(row=12, column=0, columnspan=2, pady=5)
 
 cols = ["NSS", "CURP", "Género", "No. Control", "Turno", "Área", "Horas Extra", "Vacaciones", "Económicos", "Retardos", "Incapacidad", "Faltas", "Últ. Entrada", "Últ. Salida", "Suspendido Hasta"]
 tree = ttk.Treeview(root, columns=cols, show='headings', height=8)

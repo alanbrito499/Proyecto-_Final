@@ -22,24 +22,6 @@ class Empleado:
 
 empleados = {}
 
-def registrar_empleado():
-    nss = entry_nss.get()
-    curp = entry_curp.get()
-    genero = combo_genero.get()
-    num_control = entry_num_control.get()
-    turno = combo_turno.get()
-    area = entry_area.get()
-    if nss and curp and genero and num_control and turno and area:
-        if nss in empleados:
-            messagebox.showerror("Error", "Empleado ya registrado.")
-            return
-        empleados[nss] = Empleado(nss, curp, genero, num_control, turno, area)
-        messagebox.showinfo("Éxito", "Empleado registrado.")
-        limpiar_campos()
-        actualizar_lista()
-    else:
-        messagebox.showerror("Error", "Todos los campos son obligatorios.")
-
 def limpiar_campos():
     entry_nss.delete(0, tk.END)
     entry_curp.delete(0, tk.END)
@@ -60,6 +42,24 @@ def actualizar_lista():
             emp.salidas[-1] if emp.salidas else '',
             emp.suspendido_hasta.strftime('%Y-%m-%d') if emp.suspendido_hasta else ''
         ))
+
+def registrar_empleado():
+    nss = entry_nss.get()
+    curp = entry_curp.get()
+    genero = combo_genero.get()
+    num_control = entry_num_control.get()
+    turno = combo_turno.get()
+    area = entry_area.get()
+    if nss and curp and genero and num_control and turno and area:
+        if nss in empleados:
+            messagebox.showerror("Error", "Empleado ya registrado.")
+            return
+        empleados[nss] = Empleado(nss, curp, genero, num_control, turno, area)
+        messagebox.showinfo("Éxito", "Empleado registrado.")
+        limpiar_campos()
+        actualizar_lista()
+    else:
+        messagebox.showerror("Error", "Todos los campos son obligatorios.")
 
 def marcar_entrada():
     nss = entry_nss.get()
@@ -97,44 +97,45 @@ def agregar_horas_extra():
         try:
             horas = int(entry_horas_extra.get())
             empleados[nss].horas_extra += horas
+            entry_horas_extra.delete(0, tk.END)
             actualizar_lista()
-        except:
+        except Exception:
             messagebox.showerror("Error", "Ingrese un número válido.")
     else:
         messagebox.showerror("Error", "Empleado no encontrado.")
-
 def agregar_vacaciones():
     nss = entry_nss.get()
     if nss in empleados:
         try:
             dias = int(entry_vacaciones.get())
             empleados[nss].dias_vacacionales += dias
+            entry_vacaciones.delete(0, tk.END)
             actualizar_lista()
-        except:
+        except Exception:
             messagebox.showerror("Error", "Ingrese un número válido.")
     else:
         messagebox.showerror("Error", "Empleado no encontrado.")
-
 def agregar_economicos():
     nss = entry_nss.get()
     if nss in empleados:
         try:
             dias = int(entry_economicos.get())
             empleados[nss].dias_economicos += dias
+            entry_economicos.delete(0, tk.END)
             actualizar_lista()
-        except:
+        except Exception:
             messagebox.showerror("Error", "Ingrese un número válido.")
     else:
         messagebox.showerror("Error", "Empleado no encontrado.")
-
 def agregar_incapacidad():
     nss = entry_nss.get()
     if nss in empleados:
         try:
             dias = int(entry_incapacidad.get())
             empleados[nss].incapacitaciones += dias
+            entry_incapacidad.delete(0, tk.END)
             actualizar_lista()
-        except:
+        except Exception:
             messagebox.showerror("Error", "Ingrese un número válido.")
     else:
         messagebox.showerror("Error", "Empleado no encontrado.")
@@ -151,6 +152,7 @@ def agregar_falta():
     else:
         messagebox.showerror("Error", "Empleado no encontrado.")
 
+# --- Interfaz gráfica ---
 root = tk.Tk()
 root.title("Control de Asistencias")
 
@@ -182,25 +184,29 @@ entry_area = tk.Entry(frame)
 entry_area.grid(row=5, column=1)
 
 tk.Button(frame, text="Registrar Empleado", command=registrar_empleado).grid(row=6, column=0, columnspan=2, pady=5)
-
-tk.Button(frame, text="Marcar Entrada", command=marcar_entrada).grid(row=7, column=0)
-tk.Button(frame, text="Marcar Salida", command=marcar_salida).grid(row=7, column=1)
-
 tk.Label(frame, text="Horas Extra:").grid(row=8, column=0)
 entry_horas_extra = tk.Entry(frame, width=5)
 entry_horas_extra.grid(row=8, column=1)
-tk.Button(frame, text="Agregar", command=agregar_horas_extra).grid(row=8, column=2)
+btn_horas_extra = tk.Button(frame, text="Agregar", command=agregar_horas_extra)
+btn_horas_extra.grid(row=8, column=2)
 
 tk.Label(frame, text="Vacaciones:").grid(row=9, column=0)
 entry_vacaciones = tk.Entry(frame, width=5)
 entry_vacaciones.grid(row=9, column=1)
-tk.Button(frame, text="Agregar", command=agregar_vacaciones).grid(row=9, column=2)
+btn_vacaciones = tk.Button(frame, text="Agregar", command=agregar_vacaciones)
+btn_vacaciones.grid(row=9, column=2)
 
 tk.Label(frame, text="Económicos:").grid(row=10, column=0)
 entry_economicos = tk.Entry(frame, width=5)
 entry_economicos.grid(row=10, column=1)
-tk.Button(frame, text="Agregar", command=agregar_economicos).grid(row=10, column=2)
+btn_economicos = tk.Button(frame, text="Agregar", command=agregar_economicos)
+btn_economicos.grid(row=10, column=2)
 
+tk.Label(frame, text="Incapacidad:").grid(row=11, column=0)
+entry_incapacidad = tk.Entry(frame, width=5)
+entry_incapacidad.grid(row=11, column=1)
+btn_incapacidad = tk.Button(frame, text="Agregar", command=agregar_incapacidad)
+btn_incapacidad.grid(row=11, column=2)
 tk.Label(frame, text="Incapacidad:").grid(row=11, column=0)
 entry_incapacidad = tk.Entry(frame, width=5)
 entry_incapacidad.grid(row=11, column=1)
@@ -208,7 +214,11 @@ tk.Button(frame, text="Agregar", command=agregar_incapacidad).grid(row=11, colum
 
 tk.Button(frame, text="Agregar Falta", command=agregar_falta).grid(row=12, column=0, columnspan=2, pady=5)
 
-cols = ["NSS", "CURP", "Género", "No. Control", "Turno", "Área", "Horas Extra", "Vacaciones", "Económicos", "Retardos", "Incapacidad", "Faltas", "Últ. Entrada", "Últ. Salida", "Suspendido Hasta"]
+cols = [
+    "NSS", "CURP", "Género", "No. Control", "Turno", "Área", "Horas Extra",
+    "Vacaciones", "Económicos", "Retardos", "Incapacidad", "Faltas",
+    "Últ. Entrada", "Últ. Salida", "Suspendido Hasta"
+]
 tree = ttk.Treeview(root, columns=cols, show='headings', height=8)
 for col in cols:
     tree.heading(col, text=col)

@@ -1,4 +1,35 @@
 import tkinter as tk
+from tkinter import ttk
+
+def mostrar_instrucciones():
+    instrucciones = (
+        "Instrucciones de uso por si no me entendiste como usarlo :\n\n"
+        "1. Llena los campos de NSS, CURP, Género, No. Control, Turno y Área para registrar un empleado.\n"
+        "2. Use los botones para marcar tu entrada, salida, agregar horas extra, vacaciones, dias económicos, incapacidad o faltas.\n"
+        "3. Los empleados con 3 retardos o 3 faltas serán suspendidos automáticamente por 1 semana.\n"
+        "4. Los datos de los empleados se muestran en la tabla inferior.\n"
+        "5. Creo se puede ver esta pestaña para ver las instrucciones cuando quiera"
+    )
+    text_instrucciones.config(state='normal')
+    text_instrucciones.delete(1.0, tk.END)
+    text_instrucciones.insert(tk.END, instrucciones)
+    text_instrucciones.config(state='disabled')
+
+root = tk.Tk()
+root.title("Control de Asistencias")
+
+notebook = ttk.Notebook(root)
+notebook.pack(fill='both', expand=True)
+
+frame = tk.Frame(notebook)
+notebook.add(frame, text="Principal")
+
+frame_instrucciones = tk.Frame(notebook)
+notebook.add(frame_instrucciones, text="Cómo usar el código")
+
+text_instrucciones = tk.Text(frame_instrucciones, wrap='word', height=20, width=80)
+text_instrucciones.pack(padx=10, pady=10, fill='both', expand=True)
+mostrar_instrucciones()
 from tkinter import ttk, messagebox
 import datetime
 
@@ -71,7 +102,7 @@ def marcar_entrada():
             return
         hora = datetime.datetime.now().strftime('%H:%M')
         emp.entradas.append(hora)
-        # Retardo si entra después de las 9:10
+    
         if hora > '09:10':
             emp.retardos += 1
             if emp.retardos % 3 == 0:
